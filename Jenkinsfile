@@ -7,7 +7,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                url 'https://github.com/nicholasaffum/jenkinds_Demo2026.git'
+                url: 'https://github.com/nicholasaffum/jenkinds_Demo2026.git'
             }
         }
 
