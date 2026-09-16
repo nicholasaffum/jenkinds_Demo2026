@@ -14,7 +14,7 @@ spec:
         app: devops-demo
     spec:
       containers:
-        - name: 
+        - name: sample-java-app
           image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/devops-demo:1.0
           ports:
             - containerPort: 8080
