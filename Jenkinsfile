@@ -17,6 +17,18 @@ pipeline {
             }
         }
 
+        stage('Maven unit test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('SonarQube') {
+            steps {
+                sh 'mvn sonarsonar'
+            }
+        }
+
         stage('Verify Target Folder') {
             steps {
                 sh 'ls -lrt target'
@@ -44,6 +56,19 @@ pipeline {
         stage('Verify Container') {
             steps {
                 sh 'docker ps'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh "docker push sample-java-app:2026.1"
+            }
+        }
+
+        stage('Deploy to kubenet') {
+            steps {
+                sh "sed -i 's|IMAGE_TAG|2026.1|g' k8s/deployment.yaml"
+                sh 'kubectl apply -f k8s/'
             }
         }
     }
