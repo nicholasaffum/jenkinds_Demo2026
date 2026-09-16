@@ -14,7 +14,7 @@ spec:
         app: nick-jenkins
     spec:
       containers:
-        - name: sample-java-app
+        - name: java-container
           image: sample-java-app:2026.1
           ports:
             - containerPort: 8080
