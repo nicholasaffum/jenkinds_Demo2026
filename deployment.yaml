@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+
+kind: Deployment
+metadata:
+  name: nick-jenkins
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: devops-demo
+  template:
+    metadata:
+      labels:
+        app: devops-demo
+    spec:
+      containers:
+        - name: 
+          image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/devops-demo:1.0
+          ports:
+            - containerPort: 8080
