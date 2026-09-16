@@ -7,14 +7,14 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: devops-demo
+      app: nick-jenkins
   template:
     metadata:
       labels:
-        app: devops-demo
+        app: nick-jenkins
     spec:
       containers:
         - name: sample-java-app
-          image: 123456789012.dkr.ecr.ap-south-1.amazonaws.com/devops-demo:1.0
+          image: sample-java-app:2026.1
           ports:
             - containerPort: 8080
