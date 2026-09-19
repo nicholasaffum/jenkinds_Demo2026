@@ -25,7 +25,8 @@ pipeline {
 
         stage('SonarQube') {
             steps {
-                sh 'mvn sonar:sonar'
+                // FIXED: Explicit plugin coordinates to resolve the prefix mapping error
+                sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar'
             }
         }
 
@@ -37,7 +38,6 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                // FIXED: Tagged the image with 2026.1 during build to match the push stage
                 sh 'docker build -t sample-java-app:2026.1 .'
             }
         }
@@ -50,7 +50,6 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                // FIXED: Pointed to the newly matching tagged image
                 sh 'docker run -d -p 8000:8000 --name java-container sample-java-app:2026.1'
             }
         }
@@ -69,7 +68,6 @@ pipeline {
 
         stage('Deploy to kubenet') {
             steps {
-                // FIXED: Adjusted path from k8s/deployment.yaml to deployment.yaml to match repo root
                 sh "sed -i 's|IMAGE_TAG|2026.1|g' deployment.yaml"
                 sh 'kubectl apply -f deployment.yaml'
             }
