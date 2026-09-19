@@ -88,9 +88,9 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy with Helm') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                sh 'helm upgrade --install nick-jenkins helm'
             }
         }
     }
@@ -105,3 +105,4 @@ pipeline {
         }
     }
 }
+
