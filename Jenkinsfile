@@ -4,15 +4,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
-            steps {
-                git(
-                    branch: 'main',
-                    url: 'https://github.com/nicholasaffum/jenkinds_Demo2026.git'
-                )
-            }
-        }
-
         stage('Maven Unit Test') {
             steps {
                 sh 'mvn test'
@@ -71,7 +62,11 @@ pipeline {
 
         stage('Verify Container') {
             steps {
-                sh 'docker ps'
+                sh '''
+                    docker ps
+                    sleep 5
+                    curl --fail http://localhost:8000
+                '''
             }
         }
 
@@ -101,7 +96,6 @@ pipeline {
     }
 
     post {
-
         success {
             echo 'Pipeline executed successfully!'
         }
