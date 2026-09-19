@@ -6,27 +6,37 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/nicholasaffum/jenkinds_Demo2026.git'
+                git(
+                    branch: 'main',
+                    url: 'https://github.com/nicholasaffum/jenkinds_Demo2026.git'
+                )
             }
         }
 
-        stage('Build Maven Project') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-
-        stage('Maven unit test') {
+        stage('Maven Unit Test') {
             steps {
                 sh 'mvn test'
             }
         }
 
+        stage('Build Maven Project') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
         stage('SonarQube') {
             steps {
-                // FIXED: Explicit plugin coordinates to resolve the prefix mapping error
-                sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar'
+                withCredentials([string(
+                    credentialsId: 'sonarqube-token',
+                    variable: 'SONAR_TOKEN'
+                )]) {
+                    sh '''
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
+                        -Dsonar.host.url=http://18.216.91.10:9000 \
+                        -Dsonar.token="$SONAR_TOKEN"
+                    '''
+                }
             }
         }
 
@@ -38,7 +48,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t sample-java-app:2026.1 .'
+                sh 'docker build -t nicholasaffum/sample-java-app:2026.1 .'
             }
         }
 
@@ -50,7 +60,12 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                sh 'docker run -d -p 8000:8000 --name java-container sample-java-app:2026.1'
+                sh '''
+                    docker run -d \
+                    -p 8000:8080 \
+                    --name java-container \
+                    nicholasaffum/sample-java-app:2026.1
+                '''
             }
         }
 
@@ -62,22 +77,35 @@ pipeline {
 
         stage('Docker Push') {
             steps {
-                sh "docker push sample-java-app:2026.1"
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login \
+                        --username "$DOCKER_USERNAME" \
+                        --password-stdin
+
+                        docker push nicholasaffum/sample-java-app:2026.1
+                    '''
+                }
             }
         }
 
-        stage('Deploy to kubenet') {
+        stage('Deploy to Kubernetes') {
             steps {
-                sh "sed -i 's|IMAGE_TAG|2026.1|g' deployment.yaml"
-                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f k8s/'
             }
         }
     }
 
     post {
+
         success {
             echo 'Pipeline executed successfully!'
         }
+
         failure {
             echo 'Pipeline failed!'
         }
