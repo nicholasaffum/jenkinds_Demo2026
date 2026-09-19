@@ -21,7 +21,7 @@ spec:
       containers:
         - name: java-container
 
-          image: nicholasaffum/sample-java-app:2026.1
+          image: nickjoecole/sample-java-app:2026.1
 
           imagePullPolicy: Always
 
