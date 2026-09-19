@@ -39,7 +39,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t nicholasaffum/sample-java-app:2026.1 .'
+                sh 'docker build -t nickjoecole/sample-java-app:2026.1 .'
             }
         }
 
@@ -55,7 +55,7 @@ pipeline {
                     docker run -d \
                     -p 8000:8080 \
                     --name java-container \
-                    nicholasaffum/sample-java-app:2026.1
+                    nickjoecole/sample-java-app:2026.1
                 '''
             }
         }
@@ -82,7 +82,7 @@ pipeline {
                         --username "$DOCKER_USERNAME" \
                         --password-stdin
 
-                        docker push nicholasaffum/sample-java-app:2026.1
+                        docker push nickjoecole/sample-java-app:2026.1
                     '''
                 }
             }
