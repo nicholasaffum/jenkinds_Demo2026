@@ -1,20 +1,29 @@
 apiVersion: apps/v1
 
 kind: Deployment
+
 metadata:
   name: nick-jenkins
+
 spec:
   replicas: 3
+
   selector:
     matchLabels:
       app: nick-jenkins
+
   template:
     metadata:
       labels:
         app: nick-jenkins
+
     spec:
       containers:
         - name: java-container
-          image: sample-java-app:2026.1
+
+          image: nicholasaffum/sample-java-app:2026.1
+
+          imagePullPolicy: Always
+
           ports:
             - containerPort: 8080
