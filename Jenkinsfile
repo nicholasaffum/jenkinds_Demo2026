@@ -25,7 +25,6 @@ pipeline {
 
         stage('SonarQube') {
             steps {
-                // FIXED: Changed 'sonarsonar' to 'sonar:sonar'
                 sh 'mvn sonar:sonar'
             }
         }
@@ -38,7 +37,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t sample-java-app .'
+                // FIXED: Tagged the image with 2026.1 during build to match the push stage
+                sh 'docker build -t sample-java-app:2026.1 .'
             }
         }
 
@@ -50,7 +50,8 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                sh 'docker run -d -p 8000:8000 --name java-container sample-java-app'
+                // FIXED: Pointed to the newly matching tagged image
+                sh 'docker run -d -p 8000:8000 --name java-container sample-java-app:2026.1'
             }
         }
 
@@ -68,18 +69,17 @@ pipeline {
 
         stage('Deploy to kubenet') {
             steps {
-                sh "sed -i 's|IMAGE_TAG|2026.1|g' k8s/deployment.yaml"
-                sh 'kubectl apply -f k8s/'
+                // FIXED: Adjusted path from k8s/deployment.yaml to deployment.yaml to match repo root
+                sh "sed -i 's|IMAGE_TAG|2026.1|g' deployment.yaml"
+                sh 'kubectl apply -f deployment.yaml'
             }
         }
     }
 
     post {
-
         success {
             echo 'Pipeline executed successfully!'
         }
-
         failure {
             echo 'Pipeline failed!'
         }
