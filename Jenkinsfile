@@ -25,7 +25,8 @@ pipeline {
 
         stage('SonarQube') {
             steps {
-                sh 'mvn sonarsonar'
+                // FIXED: Changed 'sonarsonar' to 'sonar:sonar'
+                sh 'mvn sonar:sonar'
             }
         }
 
